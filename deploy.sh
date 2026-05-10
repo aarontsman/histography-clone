@@ -40,6 +40,7 @@ rsync -az --delete \
   --exclude='.git' \
   --exclude='__pycache__' \
   --exclude='*.md' \
+  --exclude='data/' \
   "${SCRIPT_DIR}/" "${RPI_USER}@${RPI_HOST}:${DEPLOY_DIR}/"
 
 # ── 3. Install & configure nginx ──────────────────────────
