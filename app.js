@@ -131,6 +131,7 @@ const state = {
   events:     [],
   activeCats: new Set(Object.keys(CATS)),
   search:     '',
+  country:    '',
   hovered:    null,
   selected:   null,
   dragging:   false,
@@ -166,7 +167,9 @@ const panelDesc  = document.getElementById('panel-desc');
 const panelLink  = document.getElementById('panel-link');
 const filters    = document.getElementById('filters');
 const searchEl   = document.getElementById('search');
-const yearRange  = document.getElementById('year-range');
+const yearRange      = document.getElementById('year-range');
+const countryInput   = document.getElementById('country-input');
+const countryDropdown = document.getElementById('country-dropdown');
 
 // ─────────────────────────────────────────────────────────────
 // OFFSCREEN RESOURCES
@@ -320,11 +323,13 @@ function tickInterval(span) {
 let _visCache = null;
 function visibleEvents() {
   if (_visCache) return _visCache;
-  const q = state.search.toLowerCase();
+  const q  = state.search.toLowerCase();
+  const co = state.country;
   _visCache = state.events.filter(ev => {
     if (!state.activeCats.has(ev.cat)) return false;
     if (q && !ev.title.toLowerCase().includes(q) &&
            !(ev.desc||'').toLowerCase().includes(q)) return false;
+    if (co && (ev.country || '') !== co) return false;
     return ev.year >= state.viewStart && ev.year <= state.viewEnd;
   });
   return _visCache;
@@ -704,7 +709,7 @@ function showPanel(ev) {
   panelBadge.textContent       = cat.label;
   panelBadge.style.color       = color;
   panelBadge.style.borderColor = color;
-  panelYear.textContent        = fmtYear(ev.year);
+  panelYear.textContent        = ev.country ? `${fmtYear(ev.year)} · ${ev.country}` : fmtYear(ev.year);
   panelTitle.textContent       = ev.title;
   panelTitle.style.color       = color;
   panelDesc.textContent        = ev.desc || '';
@@ -816,6 +821,77 @@ searchEl.addEventListener('input', () => {
 });
 
 // ─────────────────────────────────────────────────────────────
+// COUNTRY FILTER
+// ─────────────────────────────────────────────────────────────
+
+let allCountries = [];
+
+function buildCountryList() {
+  const set = new Set();
+  for (const ev of state.events) {
+    if (ev.country) set.add(ev.country);
+  }
+  allCountries = Array.from(set).sort();
+}
+
+function renderCountryDropdown(filter) {
+  const q = filter.toLowerCase();
+  const matches = q
+    ? allCountries.filter(c => c.toLowerCase().includes(q))
+    : allCountries;
+  if (!matches.length) { countryDropdown.classList.add('hidden'); return; }
+  countryDropdown.innerHTML = '';
+  if (state.country) {
+    const clr = document.createElement('div');
+    clr.className = 'country-opt';
+    clr.textContent = '✕  Clear filter';
+    clr.style.color = 'rgba(255,255,255,0.4)';
+    clr.addEventListener('mousedown', e => {
+      e.preventDefault();
+      state.country = '';
+      countryInput.value = '';
+      countryInput.classList.remove('active');
+      countryDropdown.classList.add('hidden');
+      draw(performance.now());
+    });
+    countryDropdown.appendChild(clr);
+  }
+  for (const c of matches.slice(0, 80)) {
+    const el = document.createElement('div');
+    el.className = 'country-opt' + (c === state.country ? ' selected' : '');
+    el.textContent = c;
+    el.addEventListener('mousedown', e => {
+      e.preventDefault();
+      state.country = c;
+      countryInput.value = c;
+      countryInput.classList.add('active');
+      countryDropdown.classList.add('hidden');
+      draw(performance.now());
+    });
+    countryDropdown.appendChild(el);
+  }
+  countryDropdown.classList.remove('hidden');
+}
+
+countryInput.addEventListener('focus', () => renderCountryDropdown(countryInput.value));
+countryInput.addEventListener('input', () => renderCountryDropdown(countryInput.value));
+countryInput.addEventListener('blur', () => {
+  setTimeout(() => countryDropdown.classList.add('hidden'), 150);
+  // If text doesn't match selection, reset
+  if (countryInput.value !== state.country) {
+    countryInput.value = state.country;
+  }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape' && state.country) {
+    state.country = '';
+    countryInput.value = '';
+    countryInput.classList.remove('active');
+    draw(performance.now());
+  }
+});
+
+// ─────────────────────────────────────────────────────────────
 // ZOOM CONTROLS & RESIZE
 // ─────────────────────────────────────────────────────────────
 
@@ -848,6 +924,7 @@ async function loadData() {
       }
     }
   } catch (_) {}
+  buildCountryList();
 }
 
 // ─────────────────────────────────────────────────────────────

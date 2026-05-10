@@ -81,7 +81,7 @@ QUERIES = [
 # ── SPARQL query builders ──────────────────────────────────────────────────────
 
 EVENT_QUERY = """
-SELECT ?item ?itemLabel ?date ?image ?desc ?article WHERE {{
+SELECT ?item ?itemLabel ?date ?image ?desc ?article ?countryLabel WHERE {{
   ?item wdt:P31 wd:{type_id} .
   ?item wdt:{date_prop} ?date .
   OPTIONAL {{ ?item wdt:P18 ?image . }}
@@ -93,6 +93,7 @@ SELECT ?item ?itemLabel ?date ?image ?desc ?article WHERE {{
     ?article schema:about ?item .
     ?article schema:isPartOf <https://en.wikipedia.org/> .
   }}
+  OPTIONAL {{ ?item wdt:P17 ?country . }}
   SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en" . }}
 }}
 ORDER BY ?date
@@ -101,7 +102,7 @@ OFFSET {offset}
 """
 
 WIKI_REQUIRED_QUERY = """
-SELECT ?item ?itemLabel ?date ?image ?desc ?article WHERE {{
+SELECT ?item ?itemLabel ?date ?image ?desc ?article ?countryLabel WHERE {{
   ?item wdt:P31 wd:{type_id} .
   ?item wdt:{date_prop} ?date .
   ?article schema:about ?item .
@@ -111,6 +112,7 @@ SELECT ?item ?itemLabel ?date ?image ?desc ?article WHERE {{
     ?item schema:description ?desc .
     FILTER(LANG(?desc) = "en")
   }}
+  OPTIONAL {{ ?item wdt:P17 ?country . }}
   SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en" . }}
 }}
 ORDER BY ?date
@@ -226,14 +228,19 @@ def process_rows(rows, cat, seen_ids):
         if not title or title == qid:
             continue
 
+        country = row.get("countryLabel", {}).get("value", "")
+        # Skip auto-generated Wikidata labels like "Q12345"
+        if country.startswith("Q") and country[1:].isdigit():
+            country = ""
         events.append({
-            "id":   qid,
-            "year": year,
-            "title": title,
-            "desc": row.get("desc",    {}).get("value", ""),
-            "cat":  cat,
-            "wiki": wiki_slug(row.get("article", {}).get("value", "")),
-            "img":  format_image(row.get("image", {}).get("value", "")),
+            "id":      qid,
+            "year":    year,
+            "title":   title,
+            "desc":    row.get("desc",    {}).get("value", ""),
+            "cat":     cat,
+            "wiki":    wiki_slug(row.get("article", {}).get("value", "")),
+            "img":     format_image(row.get("image", {}).get("value", "")),
+            "country": country,
         })
         seen_ids.add(qid)
     return events
