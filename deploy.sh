@@ -69,9 +69,15 @@ server {
         try_files \$uri \$uri/ =404;
     }
 
-    # Cache static assets
-    location ~* \.(css|js|json|png|jpg|svg|ico)$ {
-        expires 1h;
+    # Never cache the app files so updates are instant
+    location ~* \.(html|css|js)$ {
+        expires -1;
+        add_header Cache-Control "no-store, no-cache, must-revalidate";
+    }
+
+    # Cache images and data with a short TTL
+    location ~* \.(json|png|jpg|svg|ico)$ {
+        expires 10m;
         add_header Cache-Control "public";
     }
 
