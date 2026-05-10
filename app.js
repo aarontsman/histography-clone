@@ -88,7 +88,7 @@ const BUILTIN = [
   { id:'nap',  year:1804,   title:'Napoleon Becomes Emperor',       desc:'Napoleon Bonaparte crowns himself Emperor of France at Notre-Dame.',                              cat:'politics',    wiki:'Napoleon' },
   { id:'wat',  year:1815,   title:'Battle of Waterloo',             desc:'Napoleon\'s final defeat ends the Napoleonic Wars and reshapes Europe.',                          cat:'war',         wiki:'Battle_of_Waterloo' },
   { id:'dar',  year:1859,   title:'Theory of Evolution',            desc:'Charles Darwin publishes On the Origin of Species, transforming our understanding of life.',      cat:'science',     wiki:'On_the_Origin_of_Species' },
-  { id:'acw',  year:1861,   title:'American Civil War',             desc:'The United States splits over slavery in its most devastating conflict.',                          cat:'war',         wiki:'American_Civil_War' },
+  { id:'acw',  year:1861,   title:'American Civil War',             desc:'The United States splits over slavery in its most devastating conflict.',                          cat:'war',         wiki:'American_Civil_War',         countries:['United States'] },
   { id:'phn',  year:1876,   title:'Telephone Invented',             desc:'Alexander Graham Bell patents the telephone and makes the first voice call.',                     cat:'science',     wiki:'Invention_of_the_telephone' },
   { id:'phon', year:1877,   title:'Phonograph Invented',            desc:'Thomas Edison invents the phonograph — the first device to record and play back sound.',          cat:'music',       wiki:'Phonograph' },
   { id:'elt',  year:1879,   title:'Practical Light Bulb',           desc:'Thomas Edison demonstrates a long-lasting incandescent light bulb.',                              cat:'science',     wiki:'Incandescent_light_bulb' },
@@ -97,27 +97,27 @@ const BUILTIN = [
   { id:'olym', year:1896,   title:'Modern Olympic Games',           desc:'Pierre de Coubertin revives the Olympic Games in Athens after a 1,500-year absence.',             cat:'sports',      wiki:'1896_Summer_Olympics' },
   { id:'wr',   year:1903,   title:'First Powered Airplane',         desc:'The Wright Brothers achieve the first sustained, powered, controlled flight at Kitty Hawk.',      cat:'science',     wiki:'Wright_Flyer' },
   { id:'sfq',  year:1906,   title:'San Francisco Earthquake',       desc:'A magnitude 7.9 earthquake and resulting fires destroy much of San Francisco.',                   cat:'disaster',    wiki:'1906_San_Francisco_earthquake' },
-  { id:'ww1',  year:1914,   title:'World War I Begins',             desc:'The assassination of Archduke Franz Ferdinand triggers the deadliest war yet seen.',              cat:'war',         wiki:'World_War_I' },
+  { id:'ww1',  year:1914,   title:'World War I Begins',             desc:'The assassination of Archduke Franz Ferdinand triggers the deadliest war yet seen.',              cat:'war',         wiki:'World_War_I',               countries:['Germany','France','United Kingdom','Russia','Austria-Hungary'] },
   { id:'rel',  year:1915,   title:'General Theory of Relativity',   desc:'Einstein publishes his revolutionary theory of gravity, spacetime, and the cosmos.',              cat:'science',     wiki:'General_relativity' },
   { id:'rus',  year:1917,   title:'Russian Revolution',             desc:'The Bolsheviks seize power; the Tsar is overthrown and the Soviet Union is born.',                cat:'politics',    wiki:'Russian_Revolution' },
   { id:'flu',  year:1918,   title:'Spanish Flu Pandemic',           desc:'The deadliest pandemic in modern history kills an estimated 50–100 million people.',              cat:'disaster',    wiki:'Spanish_flu' },
   { id:'wcup', year:1930,   title:'First FIFA World Cup',           desc:'Uruguay hosts and wins the inaugural FIFA World Cup, watched by 93,000 fans.',                    cat:'sports',      wiki:'1930_FIFA_World_Cup' },
   { id:'gde',  year:1929,   title:'Great Depression Begins',        desc:'The Wall Street Crash triggers the worst economic crisis in modern history.',                      cat:'politics',    wiki:'Great_Depression' },
-  { id:'ww2',  year:1939,   title:'World War II Begins',            desc:'Germany invades Poland; Britain and France declare war.',                                          cat:'war',         wiki:'World_War_II' },
-  { id:'nuc',  year:1945,   title:'Atomic Bombs on Japan',          desc:'The US drops atomic bombs on Hiroshima and Nagasaki, ending World War II.',                       cat:'war',         wiki:'Atomic_bombings_of_Hiroshima_and_Nagasaki' },
+  { id:'ww2',  year:1939,   title:'World War II Begins',            desc:'Germany invades Poland; Britain and France declare war.',                                          cat:'war',         wiki:'World_War_II',              countries:['Germany','Poland','France','United Kingdom','Japan','Soviet Union','United States'] },
+  { id:'nuc',  year:1945,   title:'Atomic Bombs on Japan',          desc:'The US drops atomic bombs on Hiroshima and Nagasaki, ending World War II.',                       cat:'war',         wiki:'Atomic_bombings_of_Hiroshima_and_Nagasaki', countries:['United States','Japan'] },
   { id:'un',   year:1945,   title:'United Nations Founded',         desc:'The UN is established to maintain international peace and security.',                              cat:'politics',    wiki:'United_Nations' },
   { id:'ind2', year:1947,   title:'Indian Independence',            desc:'India and Pakistan gain independence from Britain; partition causes mass displacement.',           cat:'politics',    wiki:'Indian_independence_movement' },
   { id:'dna',  year:1953,   title:'DNA Structure Discovered',       desc:'Watson, Crick and Franklin reveal the double-helix structure of DNA.',                            cat:'science',     wiki:'Nucleic_acid_double_helix' },
-  { id:'spu',  year:1957,   title:'Sputnik — First Satellite',      desc:'The USSR launches Sputnik 1, the first artificial Earth satellite, opening the Space Age.',       cat:'science',     wiki:'Sputnik_1' },
-  { id:'moo',  year:1969,   title:'Moon Landing',                   desc:'Apollo 11 astronauts Neil Armstrong and Buzz Aldrin walk on the Moon.',                           cat:'science',     wiki:'Apollo_11' },
-  { id:'ber',  year:1989,   title:'Fall of the Berlin Wall',        desc:'The Berlin Wall falls, symbolising the end of the Cold War.',                                     cat:'politics',    wiki:'Fall_of_the_Berlin_Wall' },
+  { id:'spu',  year:1957,   title:'Sputnik — First Satellite',      desc:'The USSR launches Sputnik 1, the first artificial Earth satellite, opening the Space Age.',       cat:'science',     wiki:'Sputnik_1',                 countries:['Soviet Union'] },
+  { id:'moo',  year:1969,   title:'Moon Landing',                   desc:'Apollo 11 astronauts Neil Armstrong and Buzz Aldrin walk on the Moon.',                           cat:'science',     wiki:'Apollo_11',                 countries:['United States'] },
+  { id:'ber',  year:1989,   title:'Fall of the Berlin Wall',        desc:'The Berlin Wall falls, symbolising the end of the Cold War.',                                     cat:'politics',    wiki:'Fall_of_the_Berlin_Wall',   countries:['Germany'] },
   { id:'www',  year:1991,   title:'World Wide Web Launched',        desc:'Tim Berners-Lee opens the World Wide Web to the public, transforming communication.',             cat:'science',     wiki:'World_Wide_Web' },
   { id:'usc',  year:1991,   title:'Dissolution of the USSR',        desc:'The Soviet Union collapses into 15 independent nations, ending the Cold War era.',                cat:'politics',    wiki:'Dissolution_of_the_Soviet_Union' },
-  { id:'911',  year:2001,   title:'September 11 Attacks',           desc:'Al-Qaeda hijackers kill nearly 3,000 people in the worst attack on US soil.',                    cat:'war',         wiki:'September_11_attacks' },
+  { id:'911',  year:2001,   title:'September 11 Attacks',           desc:'Al-Qaeda hijackers kill nearly 3,000 people in the worst attack on US soil.',                    cat:'war',         wiki:'September_11_attacks',      countries:['United States'] },
   { id:'tsu',  year:2004,   title:'Indian Ocean Tsunami',           desc:'A magnitude 9.1 quake triggers a tsunami killing 230,000 across 14 countries.',                  cat:'disaster',    wiki:'2004_Indian_Ocean_earthquake_and_tsunami' },
   { id:'iph',  year:2007,   title:'iPhone Launched',                desc:'Apple introduces the iPhone, revolutionising mobile computing.',                                   cat:'science',     wiki:'IPhone_(1st_generation)' },
-  { id:'cov',  year:2020,   title:'COVID-19 Pandemic',              desc:'A novel coronavirus causes a global pandemic, killing millions and reshaping society.',            cat:'disaster',    wiki:'COVID-19_pandemic' },
-  { id:'rua',  year:2022,   title:'Russia Invades Ukraine',         desc:'Russia launches a full-scale invasion of Ukraine — the largest war in Europe since 1945.',       cat:'war',         wiki:'Russian_invasion_of_Ukraine' },
+  { id:'cov',  year:2020,   title:'COVID-19 Pandemic',              desc:'A novel coronavirus causes a global pandemic, killing millions and reshaping society.',            cat:'disaster',    wiki:'COVID-19_pandemic',         countries:['China'] },
+  { id:'rua',  year:2022,   title:'Russia Invades Ukraine',         desc:'Russia launches a full-scale invasion of Ukraine — the largest war in Europe since 1945.',       cat:'war',         wiki:'Russian_invasion_of_Ukraine', countries:['Russia','Ukraine'] },
   { id:'ais',  year:2023,   title:'Generative AI Revolution',       desc:'Large language models transform work, creativity and technology worldwide.',                       cat:'science',     wiki:'Generative_artificial_intelligence' },
 ];
 
@@ -279,7 +279,10 @@ function visibleEvents() {
     if (!state.activeCats.has(ev.cat)) return false;
     if (q && !ev.title.toLowerCase().includes(q) &&
            !(ev.desc||'').toLowerCase().includes(q)) return false;
-    if (co && (ev.country || '') !== co) return false;
+    if (co) {
+      const ec = ev.countries;
+      if (!ec || !ec.length || !ec.includes(co)) return false;
+    }
     return ev.year >= state.viewStart && ev.year <= state.viewEnd;
   });
   return _visCache;
@@ -682,7 +685,8 @@ function showPanel(ev) {
   panelBadge.textContent       = cat.label;
   panelBadge.style.color       = color;
   panelBadge.style.borderColor = color;
-  panelYear.textContent        = ev.country ? `${fmtYear(ev.year)} · ${ev.country}` : fmtYear(ev.year);
+  const countryStr = (ev.countries && ev.countries.length) ? ev.countries.join(', ') : '';
+  panelYear.textContent = countryStr ? `${fmtYear(ev.year)} · ${countryStr}` : fmtYear(ev.year);
   panelTitle.textContent       = ev.title;
   panelTitle.style.color       = color;
   panelDesc.textContent        = ev.desc || '';
@@ -803,7 +807,7 @@ let allCountries = [];
 function buildCountryList() {
   const set = new Set();
   for (const ev of state.events) {
-    if (ev.country) set.add(ev.country);
+    for (const c of (ev.countries || [])) set.add(c);
   }
   allCountries = Array.from(set).sort();
 }

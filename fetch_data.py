@@ -213,7 +213,8 @@ def wiki_slug(url):
 
 
 def process_rows(rows, cat, seen_ids):
-    events = []
+    # Aggregate rows by QID — same event may appear multiple times (one row per P17 country)
+    by_qid = {}
     for row in rows:
         item_url = row.get("item", {}).get("value", "")
         qid = item_url.rsplit("/", 1)[-1] if item_url else ""
@@ -228,21 +229,27 @@ def process_rows(rows, cat, seen_ids):
         if not title or title == qid:
             continue
 
-        country = row.get("countryLabel", {}).get("value", "")
-        # Skip auto-generated Wikidata labels like "Q12345"
+        country = row.get("countryLabel", {}).get("value", "").strip()
         if country.startswith("Q") and country[1:].isdigit():
             country = ""
-        events.append({
-            "id":      qid,
-            "year":    year,
-            "title":   title,
-            "desc":    row.get("desc",    {}).get("value", ""),
-            "cat":     cat,
-            "wiki":    wiki_slug(row.get("article", {}).get("value", "")),
-            "img":     format_image(row.get("image", {}).get("value", "")),
-            "country": country,
-        })
-        seen_ids.add(qid)
+
+        if qid in by_qid:
+            if country and country not in by_qid[qid]["countries"]:
+                by_qid[qid]["countries"].append(country)
+        else:
+            by_qid[qid] = {
+                "id":        qid,
+                "year":      year,
+                "title":     title,
+                "desc":      row.get("desc",    {}).get("value", ""),
+                "cat":       cat,
+                "wiki":      wiki_slug(row.get("article", {}).get("value", "")),
+                "img":       format_image(row.get("image", {}).get("value", "")),
+                "countries": [country] if country else [],
+            }
+
+    events = list(by_qid.values())
+    seen_ids.update(by_qid.keys())
     return events
 
 
