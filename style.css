@@ -159,7 +159,7 @@ canvas.on-event  { cursor: pointer; }
 }
 .cat-btn.active .cat-dot {
   opacity: 1;
-  box-shadow: 0 0 7px var(--cat-color), 0 0 14px color-mix(in srgb, var(--cat-color) 35%, transparent);
+  box-shadow: 0 0 7px var(--cat-color);
 }
 
 /* ── Tooltip ──────────────────────────────────────────── */
