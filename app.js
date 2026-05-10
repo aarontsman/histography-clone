@@ -183,81 +183,31 @@ function buildBackground() {
   bgCanvas.width  = canvas.width;
   bgCanvas.height = canvas.height;
   const bc = bgCanvas.getContext('2d');
-  const W = bgCanvas.width, H = bgCanvas.height - TIMELINE_H;
-
-  bc.fillStyle = '#06060e';
+  bc.fillStyle = '#080808';
   bc.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
-
-  // Nebula clouds
-  [
-    { x: 0.12, y: 0.30, r: 0.42, rgb: [20,  40, 140], a: 0.16 },
-    { x: 0.70, y: 0.60, r: 0.32, rgb: [55,  15, 110], a: 0.10 },
-    { x: 0.48, y: 0.15, r: 0.28, rgb: [10,  50, 140], a: 0.09 },
-    { x: 0.88, y: 0.35, r: 0.24, rgb: [70,  10,  90], a: 0.07 },
-    { x: 0.33, y: 0.72, r: 0.20, rgb: [20,  30, 120], a: 0.07 },
-  ].forEach(n => {
-    const cx = n.x * W, cy = n.y * H, rad = n.r * Math.min(W, H);
-    const g = bc.createRadialGradient(cx, cy, 0, cx, cy, rad);
-    g.addColorStop(0, `rgba(${n.rgb[0]},${n.rgb[1]},${n.rgb[2]},${n.a})`);
-    g.addColorStop(1, 'transparent');
-    bc.fillStyle = g;
-    bc.fillRect(0, 0, W, H);
-  });
-
-  // Stars
-  for (let i = 0; i < 400; i++) {
-    const x = Math.random() * W, y = Math.random() * H;
-    const big = Math.random() < 0.04;
-    const r = big ? Math.random() * 1.8 + 0.8 : Math.random() * 0.8 + 0.1;
-    const a = Math.random() * 0.55 + 0.1;
-    const blue = Math.random() < 0.15;
-    bc.fillStyle = blue ? `rgba(180,200,255,${a})` : `rgba(255,255,255,${a})`;
-    bc.beginPath(); bc.arc(x, y, r, 0, Math.PI * 2); bc.fill();
-    if (big && a > 0.45) {
-      bc.strokeStyle = `rgba(255,255,255,${a * 0.35})`;
-      bc.lineWidth = 0.5;
-      bc.beginPath();
-      bc.moveTo(x - r*3, y); bc.lineTo(x + r*3, y);
-      bc.moveTo(x, y - r*3); bc.lineTo(x, y + r*3);
-      bc.stroke();
-    }
-  }
-
-  // Fade to timeline bar
-  const fade = bc.createLinearGradient(0, H - 60, 0, H);
-  fade.addColorStop(0, 'transparent');
-  fade.addColorStop(1, 'rgba(6,6,14,0.9)');
-  bc.fillStyle = fade;
-  bc.fillRect(0, H - 60, W, 60);
 }
 
 function buildSprites() {
-  // White core
-  const CS = 10;
-  const core = document.createElement('canvas');
-  core.width = core.height = CS * 2;
-  const cc = core.getContext('2d');
-  const cg = cc.createRadialGradient(CS, CS, 0, CS, CS, CS);
-  cg.addColorStop(0,    'rgba(255,255,255,1.0)');
-  cg.addColorStop(0.25, 'rgba(255,255,255,0.55)');
-  cg.addColorStop(0.6,  'rgba(255,255,255,0.08)');
-  cg.addColorStop(1,    'transparent');
-  cc.fillStyle = cg; cc.fillRect(0, 0, CS*2, CS*2);
-  SPRITES._core = core;
-
-  // Per-category glow
+  // Pre-render one sprite per category: small glow + white core
   for (const [key, cat] of Object.entries(CATS)) {
-    const GS = 24;
-    const gs = document.createElement('canvas');
-    gs.width = gs.height = GS * 2;
-    const gc = gs.getContext('2d');
+    const SZ = 28, c = SZ / 2;
+    const sp = document.createElement('canvas');
+    sp.width = sp.height = SZ;
+    const sc = sp.getContext('2d');
     const [r,g,b] = hexToRgb(cat.color);
-    const gg = gc.createRadialGradient(GS, GS, 0, GS, GS, GS);
-    gg.addColorStop(0,   `rgba(${r},${g},${b},0.7)`);
-    gg.addColorStop(0.4, `rgba(${r},${g},${b},0.18)`);
-    gg.addColorStop(1,   'transparent');
-    gc.fillStyle = gg; gc.fillRect(0, 0, GS*2, GS*2);
-    SPRITES[key] = gs;
+    // Outer glow
+    const gg = sc.createRadialGradient(c, c, 0, c, c, c);
+    gg.addColorStop(0,    `rgba(${r},${g},${b},0.55)`);
+    gg.addColorStop(0.35, `rgba(${r},${g},${b},0.18)`);
+    gg.addColorStop(1,    'transparent');
+    sc.fillStyle = gg; sc.fillRect(0, 0, SZ, SZ);
+    // White centre dot
+    const cg = sc.createRadialGradient(c, c, 0, c, c, 3.5);
+    cg.addColorStop(0, 'rgba(255,255,255,1)');
+    cg.addColorStop(1, `rgba(${r},${g},${b},0.4)`);
+    sc.fillStyle = cg;
+    sc.beginPath(); sc.arc(c, c, 3.5, 0, Math.PI * 2); sc.fill();
+    SPRITES[key] = sp;
   }
 }
 
@@ -357,17 +307,14 @@ function drawDots(now) {
   ctx.globalCompositeOperation = 'lighter';
   for (const ev of evts) {
     const x = yearToX(ev.year);
-    if (x < -60 || x > canvas.width + 60) continue;
-    const y   = eventY(ev);
-    const tw  = twinkle(ev, now);
+    if (x < -20 || x > canvas.width + 20) continue;
+    const y  = eventY(ev);
+    const tw = twinkle(ev, now);
     const hot = ev === hov || ev === sel;
-    const sp  = SPRITES[ev.cat] || SPRITES.war;
-    const gs  = hot ? 72 : 48;
-    ctx.globalAlpha = tw * (hot ? 0.85 : 0.42);
-    ctx.drawImage(sp, x - gs/2, y - gs/2, gs, gs);
-    const cs = hot ? 22 : 13;
-    ctx.globalAlpha = tw * (hot ? 1.0 : 0.72);
-    ctx.drawImage(SPRITES._core, x - cs/2, y - cs/2, cs, cs);
+    const sp = SPRITES[ev.cat] || SPRITES.war;
+    const sz = hot ? 42 : 28;
+    ctx.globalAlpha = tw * (hot ? 1.0 : 0.7);
+    ctx.drawImage(sp, x - sz/2, y - sz/2, sz, sz);
   }
   ctx.restore();
 }
@@ -395,15 +342,48 @@ function drawPulse(ev, now) {
 }
 
 
+// Historical eras for timeline labels
+const ERAS = [
+  { year: -13800000000, label: 'BIG BANG' },
+  { year:  -3800000000, label: 'EARLY LIFE' },
+  { year:   -540000000, label: 'ANCIENT LIFE' },
+  { year:    -66000000, label: 'AGE OF MAMMALS' },
+  { year:      -300000, label: 'STONE AGE' },
+  { year:       -10000, label: 'NEOLITHIC' },
+  { year:        -3000, label: 'ANCIENT' },
+  { year:         -500, label: 'CLASSICAL' },
+  { year:          500, label: 'MIDDLE AGES' },
+  { year:         1400, label: 'RENAISSANCE' },
+  { year:         1700, label: 'INDUSTRIAL' },
+  { year:         1900, label: 'MODERN' },
+  { year:         1970, label: 'INFORMATION AGE' },
+];
+
 function drawTimelineBar() {
   const W = canvas.width, H = canvas.height;
   const bY = H - TIMELINE_H;
 
-  ctx.fillStyle = 'rgba(4,4,11,0.96)';
+  // Bar background
+  ctx.fillStyle = '#0c0c0c';
   ctx.fillRect(0, bY, W, TIMELINE_H);
-  ctx.strokeStyle = 'rgba(255,255,255,0.055)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.07)';
   ctx.lineWidth   = 1;
   ctx.beginPath(); ctx.moveTo(0, bY); ctx.lineTo(W, bY); ctx.stroke();
+
+  // Era labels along the bar
+  ctx.font      = '8px Helvetica Neue, Helvetica, sans-serif';
+  ctx.textAlign = 'left';
+  for (let i = 0; i < ERAS.length; i++) {
+    const x = y2bx(ERAS[i].year, W);
+    const nextX = i + 1 < ERAS.length ? y2bx(ERAS[i+1].year, W) : W;
+    if (nextX - x < 24) continue; // skip if no room
+    ctx.fillStyle = 'rgba(255,255,255,0.12)';
+    ctx.fillText(ERAS[i].label, x + 4, bY + TIMELINE_H - 8);
+    // Era divider tick
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(x, bY + 1); ctx.lineTo(x, bY + TIMELINE_H - 1); ctx.stroke();
+  }
 
   // Density dots (all events, log-scale)
   ctx.save();
@@ -412,40 +392,33 @@ function drawTimelineBar() {
     const x = y2bx(ev.year, W);
     if (x < 0 || x > W) continue;
     const [r,g,b] = hexToRgb((CATS[ev.cat]||CATS.war).color);
-    ctx.fillStyle = `rgba(${r},${g},${b},0.26)`;
-    ctx.beginPath(); ctx.arc(x, bY + TIMELINE_H * 0.42, 1.4, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = `rgba(${r},${g},${b},0.3)`;
+    ctx.beginPath(); ctx.arc(x, bY + TIMELINE_H * 0.4, 1.5, 0, Math.PI * 2); ctx.fill();
   }
   ctx.restore();
 
   // Viewport rect
   const vL = y2bx(state.viewStart, W), vR = y2bx(state.viewEnd, W);
   const vW = Math.max(6, vR - vL);
-  ctx.fillStyle   = 'rgba(255,255,255,0.045)';
-  ctx.fillRect(vL, bY + 2, vW, TIMELINE_H - 4);
-  ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+  ctx.fillStyle   = 'rgba(255,255,255,0.05)';
+  ctx.fillRect(vL, bY + 1, vW, TIMELINE_H - 2);
+  ctx.strokeStyle = 'rgba(255,255,255,0.25)';
   ctx.lineWidth   = 1;
-  ctx.strokeRect(vL + 0.5, bY + 2.5, vW - 1, TIMELINE_H - 5);
-
-  // Dashed centre line
-  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-  ctx.setLineDash([3, 5]);
-  const mid = vL + vW / 2;
-  ctx.beginPath(); ctx.moveTo(mid, bY + 4); ctx.lineTo(mid, bY + TIMELINE_H - 4); ctx.stroke();
-  ctx.setLineDash([]);
+  ctx.strokeRect(vL + 0.5, bY + 1.5, vW - 1, TIMELINE_H - 3);
 
   // Year tick labels above bar
   const span  = state.viewEnd - state.viewStart;
   const intv  = tickInterval(span);
   const first = Math.ceil(state.viewStart / intv) * intv;
-  ctx.fillStyle   = 'rgba(255,255,255,0.27)';
-  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.fillStyle   = 'rgba(255,255,255,0.3)';
+  ctx.strokeStyle = 'rgba(255,255,255,0.1)';
   ctx.font        = '10px monospace';
   ctx.textAlign   = 'center';
   ctx.lineWidth   = 1;
   for (let yr = first; yr <= state.viewEnd; yr += intv) {
     const tx = yearToX(yr);
     if (tx < 32 || tx > W - 32) continue;
-    ctx.beginPath(); ctx.moveTo(tx, bY); ctx.lineTo(tx, bY + 6); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(tx, bY); ctx.lineTo(tx, bY + 5); ctx.stroke();
     ctx.fillText(fmtYear(yr), tx, bY - 5);
   }
 }
@@ -800,7 +773,8 @@ function buildFilters() {
     btn.dataset.cat = key;
     btn.innerHTML =
       `<span class="cat-dot" style="background:${cat.color}"></span>` +
-      `${cat.label}`;
+      `<span class="cat-label">${cat.label}</span>` +
+      `<span class="cat-count">0</span>`;
     btn.addEventListener('click', () => {
       if (state.activeCats.has(key)) { state.activeCats.delete(key); btn.classList.remove('active'); }
       else                           { state.activeCats.add(key);    btn.classList.add('active');    }
@@ -896,6 +870,21 @@ document.addEventListener('keydown', e => {
 // ─────────────────────────────────────────────────────────────
 
 
+document.getElementById('btn-lucky').addEventListener('click', () => {
+  if (!state.events.length) return;
+  const ev = state.events[Math.floor(Math.random() * state.events.length)];
+  const span = 50;
+  state.viewStart = ev.year - span / 2;
+  state.viewEnd   = ev.year + span / 2;
+  state.selected  = ev;
+  state.activeCats = new Set(Object.keys(CATS));
+  state.country   = '';
+  countryInput.value = '';
+  countryInput.classList.remove('active');
+  showPanel(ev);
+  draw(performance.now());
+});
+
 let resizeTimer;
 window.addEventListener('resize', () => {
   clearTimeout(resizeTimer);
@@ -925,6 +914,17 @@ async function loadData() {
     }
   } catch (_) {}
   buildCountryList();
+  updateCatCounts();
+}
+
+function updateCatCounts() {
+  const counts = {};
+  for (const ev of state.events) counts[ev.cat] = (counts[ev.cat] || 0) + 1;
+  for (const btn of filters.querySelectorAll('.cat-btn')) {
+    const n = counts[btn.dataset.cat] || 0;
+    const el = btn.querySelector('.cat-count');
+    if (el) el.textContent = n;
+  }
 }
 
 // ─────────────────────────────────────────────────────────────
