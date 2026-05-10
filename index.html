@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Histography — Timeline of World History</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Loading screen -->
+  <div id="loading">
+    <div id="loading-title">HISTOGRAPHY</div>
+    <div id="loading-sub">timeline of world history</div>
+    <div id="loading-dots"><span></span><span></span><span></span></div>
+  </div>
+
+  <canvas id="canvas"></canvas>
+
+  <!-- Top bar -->
+  <div id="topbar">
+    <div id="title-area">
+      <span id="app-title">HISTOGRAPHY</span>
+      <span id="app-sub">timeline of world history</span>
+    </div>
+    <div id="search-wrap">
+      <input type="text" id="search" placeholder="Search events…" autocomplete="off" spellcheck="false">
+    </div>
+  </div>
+
+  <!-- Category filters -->
+  <div id="filters"></div>
+
+  <!-- Hover tooltip -->
+  <div id="tooltip" class="hidden">
+    <div id="tooltip-year"></div>
+    <div id="tooltip-title"></div>
+  </div>
+
+  <!-- Event detail panel -->
+  <div id="panel" class="hidden">
+    <button id="panel-close" aria-label="Close">&#x2715;</button>
+    <!-- image at the very top -->
+    <div id="panel-img-wrap">
+      <img id="panel-img" alt="">
+      <div id="panel-img-placeholder"></div>
+    </div>
+    <div id="panel-body">
+      <div id="panel-meta">
+        <span id="panel-cat-badge"></span>
+        <span id="panel-year"></span>
+      </div>
+      <div id="panel-title"></div>
+      <div id="panel-desc"></div>
+      <a id="panel-link" target="_blank" rel="noopener noreferrer">
+        Read on Wikipedia <span>↗</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Bottom HUD -->
+  <div id="year-range"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
