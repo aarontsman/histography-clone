@@ -183,7 +183,7 @@ function buildBackground() {
   bgCanvas.width  = canvas.width;
   bgCanvas.height = canvas.height;
   const bc = bgCanvas.getContext('2d');
-  bc.fillStyle = '#080808';
+  bc.fillStyle = '#121212';
   bc.fillRect(0, 0, bgCanvas.width, bgCanvas.height);
 }
 
